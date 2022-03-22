@@ -173,14 +173,14 @@ GROUP BY customer_id,product_name
 ORDER BY customer_id;
 
 ----Customer_id A-(Points excluding sushi): 30+36=66*10=660
-----								sushi :2*10=20
-----						 Total points : 660+20=680
+----				    sushi :2*10=20
+----			     Total points : 660+20=680
 
 ----Customer_id B-(Points excluding sushi): 30+24=54*10=540
-----								sushi :2*20=40
-----						 Total points : 660+20=580
+----				    sushi :2*20=40
+----			     Total points : 660+20=580
 
-----Customer_id C-( Total points )		  : 36=36*10=360
+----Customer_id C-( Total points )        : 36=36*10=360
 
 ------ 10. In the first week after a customer joins the program (including their 
 ------join date) they earn 2x points on all items, not just sushi - how many points 
@@ -213,8 +213,8 @@ ORDER BY customer_id;
  ----Customer_id A-(Total points excluding sushi): 36*10=360
 ----								
 ----Customer_id B-(Points excluding sushi): 24*10=240
-----								sushi :2*10=20
-----						 Total points : 240+20=260
+----				    sushi :2*10=20
+----			     Total points : 240+20=260
 
 ----------------------------Total points by the end of January-------------------------
 ------- Customer A : 80(1st week)+240=320
