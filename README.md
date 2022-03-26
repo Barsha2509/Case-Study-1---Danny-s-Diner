@@ -26,6 +26,19 @@ Table 2: menu
 
 The menu table maps the product_id to the actual product_name and price of each menu item.
 
+##Bonus Questions
+
+Join All The Things
+
+The following questions are related creating basic data tables that Danny and his team can use to quickly derive insights without needing to join the underlying tables using SQL.
+
+Recreate the following table output using the available data:
+
+
+![image](https://user-images.githubusercontent.com/77188609/160230492-ce5c1658-fa88-4244-bf86-63a70469f0b2.png)
+
+
+
 Table 3: members
 
 The final members table captures the join_date when a customer_id joined the beta version of the Danny’s Diner loyalty program.
