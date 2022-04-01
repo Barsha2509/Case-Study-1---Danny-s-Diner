@@ -162,62 +162,116 @@ FROM CTE
 GROUP BY customer_id
 ORDER BY customer_id;
 
--- 9.  If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
+-- 9.  If each $1 spent equates to 10 points and sushi has a 2x points multiplier
+-- how many points would each customer have?
+WITH CTE AS(
 SELECT customer_id, 
 COUNT(S.product_id) AS "total items", 
-SUM(price) AS "total amount spent", product_name
+SUM(price) AS "total amount spent", product_name,
+CASE 
+	WHEN product_name='sushi' THEN SUM(price)*2
+	ELSE SUM(price)*10
+END Points
 FROM menu AS M
 JOIN sales AS S
 ON M.product_id=S.product_id
 GROUP BY customer_id,product_name
+ORDER BY customer_id)
+SELECT customer_id, 
+SUM(Points) AS "Total points"
+FROM CTE
+GROUP BY customer_id
 ORDER BY customer_id;
 
 ----Customer_id A-(Points excluding sushi): 30+36=66*10=660
-----				    sushi :2*10=20
-----			     Total points : 660+20=680
+----								sushi :2*10=20
+----						 Total points : 660+20=680
 
 ----Customer_id B-(Points excluding sushi): 30+24=54*10=540
-----				    sushi :2*20=40
-----			     Total points : 660+20=580
+----								sushi :2*20=40
+----						 Total points : 660+20=580
 
-----Customer_id C-( Total points )        : 36=36*10=360
+----Customer_id C-( Total points )		  : 36=36*10=360
 
 ------ 10. In the first week after a customer joins the program (including their 
 ------join date) they earn 2x points on all items, not just sushi - how many points 
 ------do customer A and B have at the end of January?
+
+---Step 1:points for the first week of Jan
+CREATE VIEW first_week_jan AS (
+WITH CTE AS(
 SELECT customer_id, 
+product_name,
 COUNT(S.product_id) AS "total items", 
-SUM(price) AS "total amount spent"
+SUM(price) AS "amount spent"
 FROM menu AS M
 JOIN sales AS S
 ON M.product_id=S.product_id
 WHERE order_date BETWEEN '2020-12-31' AND '2021-01-08'
+GROUP BY customer_id,product_name
+ORDER BY customer_id),
+CTE2 AS(
+SELECT customer_id, 
+SUM("amount spent"),
+CASE 
+	WHEN customer_id='A' THEN SUM("amount spent")*2
+	WHEN customer_id='B' THEN SUM("amount spent")*2
+    WHEN customer_id='C' THEN SUM("amount spent")*2
+END points
+FROM CTE
 GROUP BY customer_id
-ORDER BY customer_id; 
- 
+ORDER BY customer_id)
+SELECT customer_id, points 
+FROM CTE2)
 ------Customer_id A (points)- 40*2=80
 ------Customer_id B (points)- 40*2=80
 ------Customer_id C (points)- 36*2=72
 
-------Points for the rest of January
-SELECT customer_id, product_name,
+---Step 2:Points for the rest of January
+CREATE VIEW rest_of_jan AS (
+WITH CTE1 AS(
+SELECT customer_id,product_name,
 COUNT(S.product_id) AS "total items", 
-SUM(price) AS "total amount spent"
+SUM(price) AS "Total amount",
+CASE 
+	WHEN product_name='sushi' THEN SUM(price)*2
+    ELSE SUM(price)*10
+END points
 FROM menu AS M
 JOIN sales AS S
 ON M.product_id=S.product_id
 WHERE order_date BETWEEN '2021-01-08' AND '2021-02-01'
 GROUP BY customer_id,product_name
-ORDER BY customer_id; 
+ORDER BY customer_id)
+SELECT customer_id, 
+SUM(Points) AS "Total points"
+FROM CTE1
+GROUP BY customer_id
+ORDER BY customer_id); 
+
+---Step 3:Calculating total points for each customer by adding points for 1st week and the rest of Jan for each customer
+WITH CTE AS(
+SELECT * 
+FROM first_week_jan 
+UNION
+SELECT * 
+FROM rest_of_jan)
+SELECT customer_id, 
+SUM(points) AS "Total Points"
+FROM CTE
+WHERE customer_id!='C'
+GROUP BY customer_id
+ORDER BY customer_id
+;
  
  ----Customer_id A-(Total points excluding sushi): 36*10=360
 ----								
 ----Customer_id B-(Points excluding sushi): 24*10=240
-----				    sushi :2*10=20
-----			     Total points : 240+20=260
+----								sushi :2*10=20
+----						 Total points : 240+20=260
 
 ----------------------------Total points by the end of January-------------------------
-------- Customer A : 80(1st week)+240=320
+------- Customer A : 80(1st week)+360=440
 ------- Customer B : 80(1st week)+260=340
 
 ------Bonus Questions
